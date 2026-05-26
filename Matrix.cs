@@ -1,12 +1,15 @@
-public class Matrix 
+public Matrix(int size, int min, int max)
 {
-    private double[,] data;
+    Size = size;
+    data = new double[size, size];
 
-    public int Size { get; }
+    Random random = new Random();
 
-    public Matrix(int size)
+    for (int i = 0; i < size; i++)
     {
-        Size = size;
-        data = new double[size, size];
+        for (int j = 0; j < size; j++)
+        {
+            data[i, j] = random.Next(min, max);
+        }
     }
 }
