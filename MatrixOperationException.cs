@@ -1,6 +1,6 @@
-public class MatrixSizeException : MatrixException
+public class MatrixOperationException : MatrixException
 {
-    public MatrixSizeException(string message) : base(message)
+    public MatrixOperationException(string message) : base(message)
     {
     }
 }
