@@ -1,0 +1,6 @@
+public class MatrixNotInvertibleException : MatrixException
+{
+    public MatrixNotInvertibleException(string message) : base(message)
+    {
+    }
+}
