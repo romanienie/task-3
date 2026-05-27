@@ -1,28 +1,28 @@
-using System;
-using System.Text;
-
+using System; // подключение библиотеки
+using System.Text; // подключение библиотеки
+// класс квадратной матрицы
 public class Matrix : IComparable<Matrix>, ICloneable
 {
-    private double[,] data;
+    private double[,] data; //хранение элементов матрицы
 
-    public int Size { get; }
+    public int Size { get; } // размер матрицы
 
-    public Matrix(int size)
+    public Matrix(int size) // конструктор пустой матрицы
     {
         if (size <= 0)
-            throw new MatrixSizeException("Размер матрицы должен быть больше нуля.");
+            throw new MatrixSizeException("размер матрицы должен быть больше нуля.");
 
         Size = size;
         data = new double[size, size];
     }
-
+// коструктор случайной матрицы
     public Matrix(int size, int min, int max) : this(size)
     {
         if (min >= max)
-            throw new MatrixOperationException("Минимальное значение должно быть меньше максимального.");
+            throw new MatrixOperationException("минимальное значение должно быть меньше максимального.");
 
         Random random = new Random();
-
+// заполнение случайными числами
         for (int i = 0; i < Size; i++)
         {
             for (int j = 0; j < Size; j++)
@@ -31,18 +31,18 @@ public class Matrix : IComparable<Matrix>, ICloneable
             }
         }
     }
-
+// конструктор из готового массива
     public Matrix(double[,] array)
     {
         if (array == null)
-            throw new MatrixOperationException("Массив не может быть null.");
-
+            throw new MatrixOperationException("массив не может быть null.");
+// проверка на квадратную матрицу
         if (array.GetLength(0) != array.GetLength(1))
-            throw new MatrixSizeException("Матрица должна быть квадратной.");
+            throw new MatrixSizeException("матрица должна быть квадратной.");
 
         Size = array.GetLength(0);
         data = new double[Size, Size];
-
+// копирование массива
         for (int i = 0; i < Size; i++)
         {
             for (int j = 0; j < Size; j++)
@@ -51,7 +51,7 @@ public class Matrix : IComparable<Matrix>, ICloneable
             }
         }
     }
-
+// индексатор
     public double this[int row, int column]
     {
         get
@@ -65,28 +65,28 @@ public class Matrix : IComparable<Matrix>, ICloneable
             data[row, column] = value;
         }
     }
-
+// проверка индекса
     private void CheckIndex(int row, int column)
     {
         if (row < 0 || row >= Size || column < 0 || column >= Size)
-            throw new MatrixOperationException("Индекс выходит за границы матрицы.");
+            throw new MatrixOperationException("индекс выходит за границы матрицы.");
     }
-
+// проверка одинакового размера матриц
     private static void CheckSameSize(Matrix a, Matrix b)
     {
         if (a == null || b == null)
-            throw new MatrixOperationException("Матрица не может быть null.");
+            throw new MatrixOperationException("матрица не может быть null.");
 
         if (a.Size != b.Size)
-            throw new MatrixSizeException("Размеры матриц должны совпадать.");
+            throw new MatrixSizeException("размеры матриц должны совпадать.");
     }
-
+// перегрузка сложения матриц
     public static Matrix operator +(Matrix a, Matrix b)
     {
         CheckSameSize(a, b);
 
         Matrix result = new Matrix(a.Size);
-
+// сложение элементов
         for (int i = 0; i < a.Size; i++)
         {
             for (int j = 0; j < a.Size; j++)
@@ -97,13 +97,13 @@ public class Matrix : IComparable<Matrix>, ICloneable
 
         return result;
     }
-
+// перегрузка умножения матриц
     public static Matrix operator *(Matrix a, Matrix b)
     {
         CheckSameSize(a, b);
 
         Matrix result = new Matrix(a.Size);
-
+// алгоритм умножения матриц
         for (int i = 0; i < a.Size; i++)
         {
             for (int j = 0; j < a.Size; j++)
@@ -117,25 +117,25 @@ public class Matrix : IComparable<Matrix>, ICloneable
 
         return result;
     }
-
+// нахождение детерминантов
     public double Determinant()
     {
         double[,] temp = CopyArray(data);
         double det = 1;
-
+// метод Гаусса
         for (int i = 0; i < Size; i++)
         {
             int pivot = i;
-
+// поиск гавного элемента
             for (int row = i + 1; row < Size; row++)
             {
                 if (Math.Abs(temp[row, i]) > Math.Abs(temp[pivot, i]))
                     pivot = row;
             }
-
+// если элемент почти 0
             if (Math.Abs(temp[pivot, i]) < 0.000001)
                 return 0;
-
+// перестановка строк
             if (pivot != i)
             {
                 SwapRows(temp, i, pivot);
@@ -143,7 +143,7 @@ public class Matrix : IComparable<Matrix>, ICloneable
             }
 
             det *= temp[i, i];
-
+// обнуление нижних элементов
             for (int row = i + 1; row < Size; row++)
             {
                 double factor = temp[row, i] / temp[i, i];
@@ -157,22 +157,22 @@ public class Matrix : IComparable<Matrix>, ICloneable
 
         return det;
     }
-
+// нахождение обратной матрицы
     public Matrix Inverse()
     {
         double det = Determinant();
-
+// проверка существования обратной матрицы
         if (Math.Abs(det) < 0.000001)
-            throw new MatrixNotInvertibleException("Обратная матрица не существует, потому что детерминант равен нулю.");
+            throw new MatrixNotInvertibleException("обратная матрица не существует, потому что детерминант равен нулю.");
 
         double[,] left = CopyArray(data);
         double[,] right = new double[Size, Size];
-
+// создани едининой матрицы
         for (int i = 0; i < Size; i++)
         {
             right[i, i] = 1;
         }
-
+// метод Гаусса
         for (int i = 0; i < Size; i++)
         {
             int pivot = i;
@@ -184,8 +184,8 @@ public class Matrix : IComparable<Matrix>, ICloneable
             }
 
             if (Math.Abs(left[pivot, i]) < 0.000001)
-                throw new MatrixNotInvertibleException("Обратная матрица не существует.");
-
+                throw new MatrixNotInvertibleException("обратная матрица не существует.");
+// перестановка строк
             if (pivot != i)
             {
                 SwapRows(left, i, pivot);
@@ -193,13 +193,13 @@ public class Matrix : IComparable<Matrix>, ICloneable
             }
 
             double divisor = left[i, i];
-
+// деление строки
             for (int column = 0; column < Size; column++)
             {
                 left[i, column] /= divisor;
                 right[i, column] /= divisor;
             }
-
+// обнуение элементов
             for (int row = 0; row < Size; row++)
             {
                 if (row == i)
@@ -217,7 +217,7 @@ public class Matrix : IComparable<Matrix>, ICloneable
 
         return new Matrix(right);
     }
-
+// копирование массива
     private static double[,] CopyArray(double[,] source)
     {
         int size = source.GetLength(0);
@@ -233,7 +233,7 @@ public class Matrix : IComparable<Matrix>, ICloneable
 
         return copy;
     }
-
+// перестновка строк
     private static void SwapRows(double[,] array, int row1, int row2)
     {
         int size = array.GetLength(0);
@@ -245,7 +245,7 @@ public class Matrix : IComparable<Matrix>, ICloneable
             array[row2, column] = temp;
         }
     }
-
+// сравнение по детерминанту
     public int CompareTo(Matrix other)
     {
         if (other == null)
@@ -253,7 +253,7 @@ public class Matrix : IComparable<Matrix>, ICloneable
 
         return Determinant().CompareTo(other.Determinant());
     }
-
+// проверка равенства матриц
     public override bool Equals(object obj)
     {
         if (obj is not Matrix other)
@@ -273,7 +273,7 @@ public class Matrix : IComparable<Matrix>, ICloneable
 
         return true;
     }
-
+// генерация хэш кода
     public override int GetHashCode()
     {
         int hash = Size;
@@ -288,17 +288,17 @@ public class Matrix : IComparable<Matrix>, ICloneable
 
         return hash;
     }
-
+// глубокое копирование матрицы
     public Matrix CloneMatrix()
     {
         return new Matrix(data);
     }
-
+// реализация интерфейсса
     public object Clone()
     {
         return CloneMatrix();
     }
-
+// вывод матрицы
     public override string ToString()
     {
         StringBuilder sb = new StringBuilder();
@@ -315,7 +315,7 @@ public class Matrix : IComparable<Matrix>, ICloneable
 
         return sb.ToString();
     }
-
+// сравнение матрицы по детерминанту
     public static bool operator >(Matrix a, Matrix b)
     {
         CheckSameSize(a, b);
@@ -339,7 +339,7 @@ public class Matrix : IComparable<Matrix>, ICloneable
         CheckSameSize(a, b);
         return a.Determinant() <= b.Determinant();
     }
-
+// проверка равенства оперратором
     public static bool operator ==(Matrix a, Matrix b)
     {
         if (ReferenceEquals(a, b))
@@ -350,12 +350,12 @@ public class Matrix : IComparable<Matrix>, ICloneable
 
         return a.Equals(b);
     }
-
+// проверка неравенства
     public static bool operator !=(Matrix a, Matrix b)
     {
         return !(a == b);
     }
-
+// приведение в дабл
     public static explicit operator double(Matrix matrix)
     {
         if (matrix == null)
@@ -363,7 +363,7 @@ public class Matrix : IComparable<Matrix>, ICloneable
 
         return matrix.Determinant();
     }
-
+// приведение в инт
     public static explicit operator int(Matrix matrix)
     {
         if (matrix == null)
@@ -371,12 +371,12 @@ public class Matrix : IComparable<Matrix>, ICloneable
 
         return matrix.Size;
     }
-
+// правда если матрица обратима
     public static bool operator true(Matrix matrix)
     {
         return matrix != null && Math.Abs(matrix.Determinant()) > 0.000001;
     }
-
+// лож если матрица необратима
     public static bool operator false(Matrix matrix)
     {
         return matrix == null || Math.Abs(matrix.Determinant()) < 0.000001;
