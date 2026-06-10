@@ -1,7 +1,0 @@
-//ошибка: обратная матрица н существует
-public class MatrixNotInvertibleException : MatrixException
-{
-    public MatrixNotInvertibleException(string message) : base(message) // конструктор принимает текст ошибки
-    {
-    }
-}
